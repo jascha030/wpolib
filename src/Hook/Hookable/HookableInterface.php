@@ -13,14 +13,12 @@ interface HookableInterface
     /**
      * Returns predefined action/method hooks,
      * which can be loaded lazily.
-     * @return array
      */
     public static function getActions(): array;
 
     /**
      * Returns predefined filter/method hooks,
      * which can be loaded lazily.
-     * @return array
      */
     public static function getFilters(): array;
 }

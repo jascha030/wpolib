@@ -8,9 +8,6 @@ class DoesNotImplementException extends \Exception
 {
     /**
      * DoesNotImplementInterfaceException constructor.
-     *
-     * @param string $className
-     * @param string $interface
      */
     public function __construct(string $className, string $interface)
     {
