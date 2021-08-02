@@ -1,8 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jascha030\Wpolib\Exception;
 
-class DoesNotImplementException
+class DoesNotImplementException extends \Exception
 {
-
+    /**
+     * DoesNotImplementInterfaceException constructor.
+     *
+     * @param string $className
+     * @param string $interface
+     */
+    public function __construct(string $className, string $interface)
+    {
+        parent::__construct("Class \"{$className}\" does not implement \"{$interface}\"");
+    }
 }
