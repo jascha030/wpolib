@@ -31,7 +31,7 @@ $autoloader = static function () {
         '<pre>composer dump-autoload</pre>'
     );
 
-    throw new \RuntimeException($errorMsg);
+    throw new RuntimeException($errorMsg);
 };
 
 /** @noinspection PhpIncludeInspection */
