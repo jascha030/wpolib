@@ -17,12 +17,8 @@ final class Psr11PimpleContainer implements ContainerInterface
 {
     private Container $container;
 
-    /**
-     * @param \Pimple\Container $container
-     */
     public function __construct(Container $container)
     {
-
         $this->container = $container;
     }
 

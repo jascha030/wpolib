@@ -2,10 +2,12 @@
 
 namespace Jascha030\Wpolib\Tests\Hook;
 
-use Jascha030\Wpolib\Hook\HookRegistry;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class HookRegistryTest extends TestCase
 {
-
 }
