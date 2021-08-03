@@ -6,16 +6,25 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
-.idea/
+/.idea/
+/.idea/*
+
+# Composer
+/vendor/
+/vendor/*
 
 # VS Code
-.vscode/*
-vscode/settings.json
+/.vscode/
+/.vscode/*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
 .history/
+
+# Nodejs
+/node_modules/
+/dist/
 
 # Vim
 [._]*.s[a-v][a-z]
@@ -33,22 +42,15 @@ tags
 
 # MacOS
 .DS_Store
+*.DS_Store
 ._*
-
-# Composer
-/vendor/
-# Nodejs
-/node_modules/
-/dist/
 
 # Other
 *.log
 *.sql
 *.sqlite
+*.cache
+**.cache
 
-shell/antigen.zsh
-*.zwc
-
-.php-cs-fixer.cache
-
+# Testing environment
 tests/Fixtures/wordpress/
