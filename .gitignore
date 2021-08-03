@@ -50,3 +50,5 @@ shell/antigen.zsh
 *.zwc
 
 .php-cs-fixer.cache
+
+tests/Fixtures/wordpress/
