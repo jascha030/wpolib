@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Loader function
+ * Loader function.
  *
  * wraps logic to resolve the appropriate composer `autoload.php` file
  *
@@ -12,9 +12,9 @@ declare(strict_types=1);
 
 $autoloader = static function () {
     $locations = [
-        dirname(__FILE__, 2) . '/vendor/autoload.php',
-        dirname(__FILE__, 4) . '/autoload.php',
-        getenv('HOME') . '/.composer/vendor/autoload.php',
+        dirname(__FILE__, 2).'/vendor/autoload.php',
+        dirname(__FILE__, 4).'/autoload.php',
+        getenv('HOME').'/.composer/vendor/autoload.php',
     ];
 
     foreach ($locations as $autoloaderPath) {
@@ -24,7 +24,7 @@ $autoloader = static function () {
     }
 
     $errorMsg = sprintf(
-        'Couldn\'t find Composer\'s Autoloader file in any of the following paths: 
+        'Couldn\'t find Composer\'s Autoloader file in any of the following paths:
         %s, please make sure you run the %s or %s commands.',
         implode(', ', $locations),
         '<pre>composer install --prefer-source</pre>',
