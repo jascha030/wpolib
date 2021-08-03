@@ -8,7 +8,7 @@ namespace Jascha030\Wpolib\Hook\Hookable;
  * Used to indicate a class containing methods,
  * which shall be hooked to a Wordpress action/filter hook using the Plugin Api.
  */
-interface HookableInterface
+interface Hookable
 {
     /**
      * Returns predefined action/method hooks,
