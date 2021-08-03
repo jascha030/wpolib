@@ -250,7 +250,7 @@ return $config
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
-                         ->exclude('vendor')
+                         ->exclude(['vendor', 'tests/Fixtures/wordpress'])
                          ->in(__DIR__)
     )
 ;
