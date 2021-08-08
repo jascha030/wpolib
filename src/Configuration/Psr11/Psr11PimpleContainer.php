@@ -23,7 +23,7 @@ final class Psr11PimpleContainer implements ContainerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function get(string $id)
     {
@@ -35,7 +35,7 @@ final class Psr11PimpleContainer implements ContainerInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function has(string $id): bool
     {
