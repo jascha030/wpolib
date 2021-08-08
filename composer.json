@@ -26,7 +26,8 @@
   "minimum-stability": "stable",
   "require": {
     "psr/container": "^1.1",
-    "pimple/pimple": "^3.4"
+    "pimple/pimple": "^3.4",
+    "jascha030/config-lib": "^1"
   },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
