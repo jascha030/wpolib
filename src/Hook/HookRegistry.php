@@ -55,19 +55,17 @@ class HookRegistry
     /**
      * Get predefined actions/filters statically
      * Based on this, wrap and hook all methods.
+     *
      * @throws \Jascha030\Wpolib\Exception\DoesNotImplementException
      */
     public function hookClasses(): void
     {
         foreach (array_keys($this->hookables) as $hookableClass) {
             if (
-                ! is_subclass_of($hookableClass, Hookable::class) &&
-                ! is_subclass_of($hookableClass, InvokeHookable::class)
+                !is_subclass_of($hookableClass, Hookable::class)
+                && !is_subclass_of($hookableClass, InvokeHookable::class)
             ) {
-                throw new DoesNotImplementException(
-                    $hookableClass,
-                    Hookable::class . ' or ' . InvokeHookable::class
-                );
+                throw new DoesNotImplementException($hookableClass, Hookable::class.' or '.InvokeHookable::class);
             }
 
             $this->hookClassMethods($hookableClass, is_subclass_of($hookableClass, Hookable::class));
@@ -83,7 +81,7 @@ class HookRegistry
                 ? $hookableClass::{$hookMethod}()
                 : $hookableClass->{$hookMethod}();
 
-            $addMethod = 'add_' . self::FILTER_TYPES[$filterType];
+            $addMethod = 'add_'.self::FILTER_TYPES[$filterType];
 
             foreach ($hooks as $filterTag => $parameters) {
                 if (\is_array($parameters) && \is_array($parameters[0])) {
@@ -103,7 +101,7 @@ class HookRegistry
     private function hookMethods(array $parameters, string $addMethod, $tag, string $serviceClass): void
     {
         foreach ($parameters as $params) {
-            $params = ! \is_array($params) ? [$params] : $params;
+            $params = !\is_array($params) ? [$params] : $params;
             $this->hookMethod($params, $addMethod, $tag, $serviceClass);
         }
     }
@@ -111,14 +109,12 @@ class HookRegistry
     /**
      * Hook a single method defined in a hookable class.
      *
-     * @param        $parameters
-     * @param string $addMethod
-     * @param        $tag
-     * @param string $serviceClass
+     * @param $parameters
+     * @param $tag
      */
     private function hookMethod($parameters, string $addMethod, $tag, string $serviceClass): void
     {
-        $parameters = ! \is_array($parameters) ? [$parameters] : $parameters;
+        $parameters = !\is_array($parameters) ? [$parameters] : $parameters;
         $callable   = $this->wrap($serviceClass, array_shift($parameters));
 
         $addMethod($tag, $callable, ...$parameters);
