@@ -7,13 +7,13 @@
 
 declare(strict_types=1);
 
-namespace Jascha030\Wpolib\Configuration\Psr11;
+namespace Jascha030\Wpolib\Container\Psr11;
 
 use Jascha030\Wpolib\Exception\Psr11\ContainerEntryNotFoundException;
 use Pimple\Container;
 use Psr\Container\ContainerInterface;
 
-final class Psr11PimpleContainer implements ContainerInterface
+class Psr11PimpleContainer implements ContainerInterface
 {
     private Container $container;
 
