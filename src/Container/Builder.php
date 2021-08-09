@@ -3,29 +3,23 @@
 namespace Jascha030\Wpolib\Container;
 
 use Jascha030\Wpolib\Container\Config\ConfigInterface;
+use Jascha030\Wpolib\Container\Psr11\Psr11PimpleContainer;
 use Pimple\Container;
-use Pimple\Psr11\Container as Psr11Container;
 
 /**
- * Class ContainerFactory
- *
- * @package Jascha030\Wpolib\Container
+ * Class ContainerFactory.
  */
-final class ContainerBuilder implements ContainerBuilderInterface
+final class Builder implements BuilderInterface
 {
     /**
-     * @inheritDoc
-     *
-     * @param  ConfigInterface  $config
-     *
-     * @return Psr11Container
+     * {@inheritDoc}
      */
-    public function __invoke(ConfigInterface $config): Psr11Container
+    public function __invoke(ConfigInterface $config): Psr11PimpleContainer
     {
         $container = new Container();
 
         $config->configure($container);
 
-        return new Psr11Container($container);
+        return new Psr11PimpleContainer($container);
     }
 }
