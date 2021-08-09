@@ -9,7 +9,7 @@ use Jascha030\Wpolib\Hook\Hookable\Hookable;
 use Jascha030\Wpolib\Hook\Hookable\InvokeHookable;
 use Psr\Container\ContainerInterface;
 
-class HookRegistry
+final class HookRegistry
 {
     /**
      * Keys for `self::FILTER_TYPES`.
@@ -31,11 +31,15 @@ class HookRegistry
 
     /**
      * PluginApiRegistryAbstract constructor.
+     *
+     * @throws \Jascha030\Wpolib\Exception\DoesNotImplementException
      */
     public function __construct(ContainerInterface $container, array $hookables)
     {
         $this->container = $container;
         $this->hookables = $hookables;
+
+        $this->hookClasses();
     }
 
     /**
@@ -60,7 +64,7 @@ class HookRegistry
      */
     public function hookClasses(): void
     {
-        foreach (array_keys($this->hookables) as $hookableClass) {
+        foreach ($this->hookables as $hookableClass) {
             if (
                 !is_subclass_of($hookableClass, Hookable::class)
                 && !is_subclass_of($hookableClass, InvokeHookable::class)
