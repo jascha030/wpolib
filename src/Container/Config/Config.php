@@ -2,54 +2,67 @@
 
 declare(strict_types=1);
 
-namespace SocialBrothers\WPUtils\Container\Config;
+namespace Jascha030\Wpolib\Container\Config;
 
-use SocialBrothers\WPUtils\Entity\Post\PostType;
-use SocialBrothers\WPUtils\Entity\Post\PostTypeInterface;
-use SocialBrothers\WPUtils\Exception\Psr11\DoesNotImplementHookableInterfaceException;
-use SocialBrothers\WPUtils\Exception\Psr11\DoesNotImplementProviderInterfaceException;
-use SocialBrothers\WPUtils\Service\Hookable\HookableAfterInitInterface;
-use SocialBrothers\WPUtils\Service\Hookable\HookableInterface;
-use SocialBrothers\WPUtils\Service\Hookable\LazyHookableInterface;
-use SocialBrothers\WPUtils\Service\Provider\WordpressProvider;
 use Pimple\Container as PimpleContainer;
 use Pimple\Psr11\ServiceLocator;
 use Pimple\ServiceIterator;
 use Pimple\ServiceProviderInterface;
 
-/**
- * Class Config
- * @package SocialBrothers\WPUtils\Container\Config
- */
-class Config extends ConfigAbstract
+class Config implements ConfigInterface
 {
-    public function __construct(string $name, string $pluginFile)
+    private array $hookables = [];
+
+    private array $serviceProviders = [];
+
+    private array $config;
+
+    public function __construct(array $config, string $pluginFile)
     {
-        $this->setPluginName($name);
+        $this->config = $config;
 
-        $this->setPluginPrefix(str_replace(' ', '', strtolower($name)));
+        parent::__construct($pluginFile);
 
-        $this->setPluginFile($pluginFile);
+        $this->setProviders($this->config['providers'] ?? []);
+        $this->setHookables($this->config['hookables'] ?? []);
     }
 
-    /**
-     * @param PimpleContainer $container
-     *
-     * @throws DoesNotImplementProviderInterfaceException
-     * @throws DoesNotImplementHookableInterfaceException
-     */
-    final public function configure(PimpleContainer $container): void
+    public function getConfigArray(): array
     {
-        $this->injectServiceProviders($container);
+        return $this->config;
+    }
+
+    public function configure(PimpleContainer $container): void
+    {
+        $this->injectProviders($container);
         $this->injectHookables($container);
         $this->injectPostTypes($container);
     }
 
-    /**
-     * @param PimpleContainer $container
-     *
-     * @throws DoesNotImplementHookableInterfaceException
-     */
+    final public function getHookables(): array
+    {
+        return $this->hookables;
+    }
+
+    final public function setHookables(array $hookables): ConfigInterface
+    {
+        $this->hookables = $hookables;
+
+        return $this;
+    }
+
+    final public function getProviders(): array
+    {
+        return $this->serviceProviders;
+    }
+
+    final public function setProviders(array $serviceProviders): ConfigInterface
+    {
+        $this->serviceProviders = $serviceProviders;
+
+        return $this;
+    }
+
     private function injectHookables(PimpleContainer $container): void
     {
         $hookables = $this->getHookables();
@@ -62,18 +75,18 @@ class Config extends ConfigAbstract
         $afterInitHookables = [];
         $reference          = [];
 
-        if (! empty($hookables)) {
+        if (!empty($hookables)) {
             foreach ($hookables as $key => $className) {
                 $closure = static function () use ($className) {
                     return new $className();
                 };
 
-                if (is_string($key) && $className instanceof \Closure) {
-                    $closure = $className;
-                    $className =  $key;
+                if (\is_string($key) && $className instanceof \Closure) {
+                    $closure   = $className;
+                    $className = $key;
                 }
 
-                if (! is_subclass_of($className, HookableInterface::class)) {
+                if (!is_subclass_of($className, HookableInterface::class)) {
                     throw new DoesNotImplementHookableInterfaceException($className);
                 }
 
@@ -85,14 +98,14 @@ class Config extends ConfigAbstract
                     $afterInitHookables[] = $className;
                 }
 
-                /** @noinspection PhpArrayUsedOnlyForWriteInspection */
+                // @noinspection PhpArrayUsedOnlyForWriteInspection
                 $container[$className] = $closure;
             }
         }
 
-        $container['hookable.reference'] = $reference;
-        $container['hookable.afterInit'] = $afterInitHookables;
-        $container['hookable.locator']   = static function (PimpleContainer $container) {
+        $container['hookables'] = $reference;
+        $container['afterInit'] = $afterInitHookables;
+        $container['locator']   = static function (PimpleContainer $container) {
             $lazyHookables    = array_keys($container['hookable.reference']);
             $hookableServices = array_merge($lazyHookables, $container['hookable.afterInit']);
 
@@ -100,17 +113,14 @@ class Config extends ConfigAbstract
         };
     }
 
-    /**
-     * @param PimpleContainer $container
-     */
     private function injectPostTypes(PimpleContainer $container): void
     {
         $definitions = [];
         $postTypes   = $this->getPostTypes();
 
         foreach ($postTypes as $postType) {
-            if (is_array($postType)) {
-                $container[$postType[0]] = static function (PimpleContainer $container) use ($postType) {
+            if (\is_array($postType)) {
+                $container[$postType[0]] = static function (PimpleContainer $c) use ($postType) {
                     return new PostType(...$postType);
                 };
 
@@ -118,7 +128,7 @@ class Config extends ConfigAbstract
             }
 
             if (is_subclass_of($postType, PostTypeInterface::class)) {
-                $container[$postType] = static function (PimpleContainer $container) use ($postType) {
+                $container[$postType] = static function (PimpleContainer $c) use ($postType) {
                     return new $postType();
                 };
 
@@ -132,31 +142,19 @@ class Config extends ConfigAbstract
     }
 
     /**
-     * @param PimpleContainer $container
-     *
      * @throws DoesNotImplementProviderInterfaceException
      */
-    private function injectServiceProviders(PimpleContainer $container): void
+    private function injectProviders(PimpleContainer $container): void
     {
-        $serviceProviders = $this->getServiceProviders();
+        $serviceProviders = $this->getProviders();
 
-        if (! in_array(WordpressProvider::class, $serviceProviders, true)) {
-            $serviceProviders[WordpressProvider::class] = [];
-        }
-
-        /**
+        /*
          * These service providers should add dependencies and methods that need to be globally available,
          * they should not be hooked directly to WordPress' actions or filters.
          */
         foreach ($serviceProviders as $provider => $arguments) {
-            if (! is_subclass_of($provider, ServiceProviderInterface::class)) {
+            if (!is_subclass_of($provider, ServiceProviderInterface::class)) {
                 throw new DoesNotImplementProviderInterfaceException($provider);
-            }
-
-            if ($provider === WordpressProvider::class) {
-                $container->register(new $provider($this->getPluginName(), $this->getPluginFile()), $arguments);
-
-                continue;
             }
 
             $container->register(new $provider(), $arguments);
